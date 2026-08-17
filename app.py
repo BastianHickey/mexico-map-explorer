@@ -10,20 +10,19 @@ from streamlit_js_eval import get_geolocation
 st.set_page_config(page_title="México Map Explorer - ATS Ultra", layout="wide")
 
 CSV_PATH = "mis_293_municipios_CON_CLAVE.csv"
-GEOJSON_PATH = "municipios_mexico_simple.json"
+GEOJSON_PATH = "municipios_mexico_simple.json.gz"
 
 # 1. Carga ultra-rápida indexada en GeoPandas
 @st.cache_data
 def cargar_base_espacial():
+    # GeoPandas lee directamente archivos .gz o .zip
     gdf = gpd.read_file(GEOJSON_PATH)
     gdf['CVEGEO'] = gdf['CVEGEO'].astype(str).str.zfill(5)
     
-    # Calcular centroides para búsqueda rápida por nombre
     gdf['centroide'] = gdf.geometry.centroid
     gdf['lat_cent'] = gdf['centroide'].y
     gdf['lon_cent'] = gdf['centroide'].x
     
-    # Crear diccionario de búsqueda por Nombre
     cat_nombres = {}
     for _, row in gdf.iterrows():
         etiqueta = f"{row.get('NOMGEO', 'Municipio')} ({row['CVEGEO'][:2]})"
@@ -34,7 +33,9 @@ def cargar_base_espacial():
             'lon': row['lon_cent']
         }
         
-    with open(GEOJSON_PATH, "r", encoding="utf-8") as f:
+    # Leer JSON comprimido
+    import gzip
+    with gzip.open(GEOJSON_PATH, "rt", encoding="utf-8") as f:
         geojson = json.load(f)
         
     return gdf, cat_nombres, geojson
