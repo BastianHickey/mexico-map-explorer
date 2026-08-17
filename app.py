@@ -6,175 +6,170 @@ import folium
 from streamlit_folium import st_folium
 from shapely.geometry import Point
 from streamlit_js_eval import get_geolocation
-
-st.set_page_config(page_title="México Map Explorer - ATS Ultra", layout="wide")
-
-CSV_PATH = "mis_293_municipios_CON_CLAVE.csv"
-GEOJSON_PATH = "municipios_mexico_simple.json.gz"
-
-# 1. Carga ultra-rápida indexada en GeoPandas
 import io
 import gzip
 
+st.set_page_config(page_title="World Map Explorer - ATS", layout="wide")
+
+# Rutas de archivos
+MX_GEO = "municipios_mexico_simple.json.gz"
+MX_CSV = "mis_293_municipios_CON_CLAVE.csv"
+
+US_GEO = "usa_counties_simple.json.gz"
+US_CSV = "mis_condados_usa.csv"
+
+# 1. Carga optimizada
 @st.cache_data
-def cargar_base_espacial():
-    # 1. Leer y descomprimir el .gz directamente en memoria
-    with gzip.open(GEOJSON_PATH, "rb") as f_in:
+def cargar_mapa_mx():
+    with gzip.open(MX_GEO, "rb") as f_in:
         bytes_data = f_in.read()
-    
-    # 2. Cargar GeoPandas desde los bytes en memoria
     gdf = gpd.read_file(io.BytesIO(bytes_data))
     gdf['CVEGEO'] = gdf['CVEGEO'].astype(str).str.zfill(5)
-    
     gdf['centroide'] = gdf.geometry.centroid
-    gdf['lat_cent'] = gdf['centroide'].y
-    gdf['lon_cent'] = gdf['centroide'].x
     
-    cat_nombres = {}
+    cat = {}
     for _, row in gdf.iterrows():
-        etiqueta = f"{row.get('NOMGEO', 'Municipio')} ({row['CVEGEO'][:2]})"
-        cat_nombres[etiqueta] = {
-            'cvegeo': row['CVEGEO'],
-            'nomgeo': row.get('NOMGEO', 'Municipio'),
-            'lat': row['lat_cent'],
-            'lon': row['lon_cent']
+        label = f"{row.get('NOMGEO', 'Municipio')} ({row['CVEGEO'][:2]})"
+        cat[label] = {
+            'clave': row['CVEGEO'],
+            'nombre': row.get('NOMGEO', 'Municipio'),
+            'lat': row['centroide'].y,
+            'lon': row['centroide'].x
         }
-        
-    # 3. Decodificar el JSON para Folium
     geojson = json.loads(bytes_data.decode("utf-8"))
-        
-    return gdf, cat_nombres, geojson
+    return gdf, cat, geojson
 
-def cargar_visitados():
-    df = pd.read_csv(CSV_PATH, dtype=str)
-    return df
+@st.cache_data
+def cargar_mapa_us():
+    with gzip.open(US_GEO, "rb") as f_in:
+        bytes_data = f_in.read()
+    gdf = gpd.read_file(io.BytesIO(bytes_data))
+    gdf['FIPS'] = gdf['id'].astype(str).str.zfill(5)
+    gdf['centroide'] = gdf.geometry.centroid
+    
+    cat = {}
+    for _, row in gdf.iterrows():
+        label = f"{row.get('NAME', 'County')}, {row.get('STATE', '')}"
+        cat[label] = {
+            'clave': row['FIPS'],
+            'nombre': row.get('NAME', 'County'),
+            'lat': row['centroide'].y,
+            'lon': row['centroide'].x
+        }
+    geojson = json.loads(bytes_data.decode("utf-8"))
+    return gdf, cat, geojson
 
-gdf_mexico, catálogo_nombres, geojson_data = cargar_base_espacial()
-df_visitados = cargar_visitados()
-claves_set = set(df_visitados['CVEGEO'].dropna().str.zfill(5))
+# Selector de País en Sidebar
+st.sidebar.title("World Map Explorer")
+pais_sel = st.sidebar.selectbox("Selecciona Región:", ["México 🇲🇽", "Estados Unidos 🇺🇸"])
 
-# 2. Interface Lateral
-st.title("🇲🇽 México Map Explorer")
-st.sidebar.header("Progreso de Exploración")
+if pais_sel == "México 🇲🇽":
+    gdf_actual, catalogo, geojson_data = cargar_mapa_mx()
+    df_vis = pd.read_csv(MX_CSV, dtype=str)
+    claves_set = set(df_vis['CVEGEO'].dropna().str.zfill(5))
+    total_muni = 2478
+    clave_col = 'CVEGEO'
+    csv_actual = MX_CSV
+    label_entidad = "Municipios"
+else:
+    gdf_actual, catalogo, geojson_data = cargar_mapa_us()
+    try:
+        df_vis = pd.read_csv(US_CSV, dtype=str)
+        claves_set = set(df_vis['FIPS'].dropna().str.zfill(5))
+    except:
+        df_vis = pd.DataFrame(columns=['FIPS', 'County_Nombre', 'Estado_Code'])
+        claves_set = set()
+    total_muni = 3143 # Total de condados en EE.UU.
+    clave_col = 'FIPS'
+    csv_actual = US_CSV
+    label_entidad = "Condados"
 
-total_visitados = len(claves_set)
-porcentaje = (total_visitados / 2478) * 100
-
-st.sidebar.metric("Municipios Desbloqueados", f"{total_visitados} / 2,478", f"{porcentaje:.1f}%")
-st.sidebar.progress(porcentaje / 100)
-
+# Métrica de Progreso
+total_vis = len(claves_set)
+pct = (total_vis / total_muni) * 100
+st.sidebar.metric(f"{label_entidad} Desbloqueados", f"{total_vis} / {total_muni:,}", f"{pct:.1f}%")
+st.sidebar.progress(min(pct / 100, 1.0))
 st.sidebar.markdown("---")
 
-# 3. GPS Nativo
+# GPS Nativo
 loc = get_geolocation()
-lat_gps, lon_gps = 20.6760, -103.3470
+lat_gps, lon_gps = (38.5816, -121.4944) if pais_sel == "Estados Unidos 🇺🇸" else (20.6760, -103.3470)
 
 if loc and 'coords' in loc:
     lat_gps = loc['coords']['latitude']
     lon_gps = loc['coords']['longitude']
-    st.sidebar.caption(f"📡 GPS Fijo: {lat_gps:.4f}, {lon_gps:.4f}")
+    st.sidebar.caption(f"GPS Fijo: {lat_gps:.4f}, {lon_gps:.4f}")
 
-# 4. Buscador Dual: Por Coordenadas O Por Nombre
-st.sidebar.subheader("🔍 Desbloquear Municipio")
-metodo_busqueda = st.sidebar.radio("Método de búsqueda:", ["Por Nombre / Lista", "Por Coordenadas (GPS)"])
+# Buscador Dual
+st.sidebar.subheader(f"Desbloquear {label_entidad[:-1]}")
+metodo = st.sidebar.radio("Método:", ["Por Lista", "Por Coordenadas"])
 
-if "punto_evaluado" not in st.session_state:
-    st.session_state.punto_evaluado = None
+if "punto_eval" not in st.session_state:
+    st.session_state.punto_eval = None
 
-if metodo_busqueda == "Por Nombre / Lista":
-    opcion_sel = st.sidebar.selectbox("Selecciona o escribe un municipio:", ["-- Seleccionar --"] + sorted(list(catálogo_nombres.keys())))
-    
-    if opcion_sel != "-- Seleccionar --":
-        target = catálogo_nombres[opcion_sel]
-        st.session_state.punto_evaluado = {
-            'lat': target['lat'],
-            'lon': target['lon'],
-            'nomgeo': target['nomgeo'],
-            'cvegeo': target['cvegeo'],
-            'ya_visitado': target['cvegeo'] in claves_set
+if metodo == "Por Lista":
+    sel = st.sidebar.selectbox("Buscar:", ["-- Seleccionar --"] + sorted(list(catalogo.keys())))
+    if sel != "-- Seleccionar --":
+        t = catalogo[sel]
+        st.session_state.punto_eval = {
+            'lat': t['lat'], 'lon': t['lon'], 'nom': t['nombre'],
+            'clave': t['clave'], 'vis': t['clave'] in claves_set
         }
-
 else:
-    with st.sidebar.form("form_coordenadas"):
-        lat_manual = st.number_input("Latitud", value=lat_gps, format="%.6f")
-        lon_manual = st.number_input("Longitud", value=lon_gps, format="%.6f")
-        btn_evaluar = st.form_submit_button("📍 Inspeccionar Coordenada")
-        
-    if btn_evaluar:
-        punto = Point(lon_manual, lat_manual)
-        # Búsqueda con índice espacial R-Tree (Cero Latencia)
-        posibles = gdf_mexico[gdf_mexico.sindex.contains(punto)]
-        coincidencia = posibles[posibles.contains(punto)]
-        
-        if not coincidencia.empty:
-            row = coincidencia.iloc[0]
-            cve = str(row['CVEGEO']).zfill(5)
-            nom = row.get('NOMGEO', 'Municipio')
-            st.session_state.punto_evaluado = {
-                'lat': lat_manual,
-                'lon': lon_manual,
-                'nomgeo': nom,
-                'cvegeo': cve,
-                'ya_visitado': cve in claves_set
-            }
-        else:
-            st.sidebar.warning("⚠️ Coordenada fuera del territorio.")
-            st.session_state.punto_evaluado = None
+    with st.sidebar.form("form_coord"):
+        lat_m = st.number_input("Latitud", value=lat_gps, format="%.6f")
+        lon_m = st.number_input("Longitud", value=lon_gps, format="%.6f")
+        if st.form_submit_button("Inspeccionar Coordenada"):
+            pt = Point(lon_m, lat_m)
+            pos = gdf_actual[gdf_actual.sindex.contains(pt)]
+            match = pos[pos.contains(pt)]
+            if not match.empty:
+                r = match.iloc[0]
+                cve = str(r['CVEGEO' if pais_sel == "México 🇲🇽" else 'id']).zfill(5)
+                nom = r.get('NOMGEO' if pais_sel == "México 🇲🇽" else 'NAME', 'Lugar')
+                st.session_state.punto_eval = {
+                    'lat': lat_m, 'lon': lon_m, 'nom': nom,
+                    'clave': cve, 'vis': cve in claves_set
+                }
 
-# Panel de Confirmación
-if st.session_state.punto_evaluado:
-    info = st.session_state.punto_evaluado
+if st.session_state.punto_eval:
+    info = st.session_state.punto_eval
     st.sidebar.markdown("---")
-    st.sidebar.write(f"**Ubicación:** {info['nomgeo']}")
-    st.sidebar.write(f"**Clave:** {info['cvegeo']}")
-    
-    if info['ya_visitado']:
-        st.sidebar.info("✅ Este municipio ya está registrado.")
+    st.sidebar.write(f"**Nombre:** {info['nom']}")
+    st.sidebar.write(f"**Código ID:** {info['clave']}")
+    if info['vis']:
+        st.sidebar.info("Ya registrado en tu lista.")
     else:
-        st.sidebar.warning("⚡ Pendiente de desbloqueo.")
-        if st.sidebar.button("🏆 Confirmar y Desbloquear"):
-            nueva_fila = pd.DataFrame([{
-                'MapChart_ID': f"{info['nomgeo']}_{info['cvegeo']}",
-                'Municipio_Nombre': info['nomgeo'],
-                'Estado_Sufijo': 'N/A',
-                'CVE_ENT': info['cvegeo'][:2],
-                'Nom_Limpio': info['nomgeo'].upper(),
-                'CVEGEO': info['cvegeo']
-            }])
+        if st.sidebar.button("Confirmar y Desbloquear"):
+            if pais_sel == "México 🇲🇽":
+                nueva = pd.DataFrame([{'MapChart_ID': f"{info['nom']}_{info['clave']}", 'Municipio_Nombre': info['nom'], 'Estado_Sufijo': 'N/A', 'CVE_ENT': info['clave'][:2], 'Nom_Limpio': info['nom'].upper(), 'CVEGEO': info['clave']}])
+            else:
+                nueva = pd.DataFrame([{'FIPS': info['clave'], 'County_Nombre': info['nom'], 'Estado_Code': info['clave'][:2]}])
             
-            df_actualizado = pd.concat([df_visitados, nueva_fila], ignore_index=True)
-            df_actualizado.to_csv(CSV_PATH, index=False)
-            st.session_state.punto_evaluado = None
-            st.sidebar.balloons()
+            df_up = pd.concat([df_vis, nueva], ignore_index=True)
+            df_up.to_csv(csv_actual, index=False)
+            st.session_state.punto_eval = None
             st.rerun()
 
-# 5. Mapa Interactivo
-centro = [st.session_state.punto_evaluado['lat'], st.session_state.punto_evaluado['lon']] if st.session_state.punto_evaluado else [lat_gps, lon_gps]
+# Renderizado de Mapa
+center = [st.session_state.punto_eval['lat'], st.session_state.punto_eval['lon']] if st.session_state.punto_eval else [lat_gps, lon_gps]
+m = folium.Map(location=center, zoom_start=7 if pais_sel == "Estados Unidos 🇺🇸" else 6, tiles="Cartodb Positron")
 
-m = folium.Map(location=centro, zoom_start=8, tiles="Cartodb Positron")
+folium.Marker(location=[lat_gps, lon_gps], popup="GPS", icon=folium.Icon(color="red", icon="car", prefix="fa")).add_to(m)
 
-# Pin Rojo GPS
-folium.Marker(location=[lat_gps, lon_gps], popup="Tu GPS", icon=folium.Icon(color="red", icon="car", prefix="fa")).add_to(m)
+if st.session_state.punto_eval:
+    p = st.session_state.punto_eval
+    folium.Marker(location=[p['lat'], p['lon']], popup=p['nom'], icon=folium.Icon(color="blue", icon="location-dot", prefix="fa")).add_to(m)
 
-# Pin Azul Inspección
-if st.session_state.punto_evaluado:
-    p = st.session_state.punto_evaluado
-    folium.Marker(location=[p['lat'], p['lon']], popup=f"Seleccionado: {p['nomgeo']}", icon=folium.Icon(color="blue", icon="location-dot", prefix="fa")).add_to(m)
-
-def estilo_municipio(feature):
-    cvegeo = str(feature.get('properties', {}).get('CVEGEO', '')).zfill(5)
-    es_vis = cvegeo in claves_set
+def estilo(feature):
+    cve = str(feature.get('properties', {}).get('CVEGEO' if pais_sel == "México 🇲🇽" else 'id', '')).zfill(5)
+    vis = cve in claves_set
     return {
-        'fillColor': '#2ea44f' if es_vis else '#e3e8ec',
-        'color': '#134e23' if es_vis else '#8c959f',
-        'weight': 0.6 if es_vis else 0.15,
-        'fillOpacity': 0.85 if es_vis else 0.2
+        'fillColor': '#2ea44f' if vis else '#e3e8ec',
+        'color': '#134e23' if vis else '#8c959f',
+        'weight': 0.6 if vis else 0.15,
+        'fillOpacity': 0.85 if vis else 0.2
     }
 
-folium.GeoJson(
-    geojson_data,
-    style_function=estilo_municipio,
-    tooltip=folium.GeoJsonTooltip(fields=['NOMGEO'], aliases=['Municipio:'])
-).add_to(m)
-
+folium.GeoJson(geojson_data, style_function=estilo).add_to(m)
 st_folium(m, width=1300, height=720)
