@@ -17,7 +17,16 @@ MX_CSV = "mis_293_municipios_CON_CLAVE.csv"
 US_GEO = "usa_counties_simple.json.gz"
 US_CSV = "mis_condados_usa.csv"
 
-# Carga individual bajo demanda para optimizar memoria RAM
+# Diccionario de Estados de México para la lista
+ESTADOS_MX = {
+    '01': 'AGS', '02': 'BC', '03': 'BCS', '04': 'CAMP', '05': 'COAH', '06': 'COL',
+    '07': 'CHIS', '08': 'CHIH', '09': 'CDMX', '10': 'DGO', '11': 'GTO', '12': 'GRO',
+    '13': 'HGO', '14': 'JAL', '15': 'MEX', '16': 'MICH', '17': 'MOR', '18': 'NAY',
+    '19': 'NL', '20': 'OAX', '21': 'PUE', '22': 'QRO', '23': 'QROO', '24': 'SLP',
+    '25': 'SIN', '26': 'SON', '27': 'TAB', '28': 'TAM', '29': 'TLAX', '30': 'VER',
+    '31': 'YUC', '32': 'ZAC'
+}
+
 @st.cache_data(max_entries=1)
 def cargar_mapa_mx():
     gc.collect()
@@ -32,14 +41,17 @@ def cargar_mapa_mx():
         cve = str(props.get('CVEGEO', '')).zfill(5)
         props['CVEGEO'] = cve
         nom = props.get('NOMGEO', 'Municipio')
+        est_abbr = ESTADOS_MX.get(cve[:2], 'MX')
+        props['ESTADO_ABBR'] = est_abbr
         
         geom = shape(feat['geometry'])
         cent = geom.centroid
         
-        label = f"{nom} ({cve[:2]})"
+        label = f"{nom}, {est_abbr}"
         cat[label] = {
             'clave': cve,
             'nombre': nom,
+            'estado': est_abbr,
             'lat': cent.y,
             'lon': cent.x
         }
@@ -67,10 +79,11 @@ def cargar_mapa_us():
         geom = shape(feat['geometry'])
         cent = geom.centroid
         
-        label = f"{nom}, {state}"
+        label = f"{nom} County, {state}"
         cat[label] = {
             'clave': fips,
             'nombre': nom,
+            'estado': state,
             'lat': cent.y,
             'lon': cent.x
         }
@@ -133,14 +146,15 @@ if loc and isinstance(loc, dict) and 'coords' in loc:
 
 # Buscador Dual
 st.sidebar.subheader(f"Desbloquear {label_entidad[:-1]}")
-metodo = st.sidebar.radio("Metodo:", ["Por Lista", "Por Coordenadas"])
+metodo = st.sidebar.radio("Metodo:", ["Por Clic en Mapa / Lista", "Por Coordenadas"])
 
-if metodo == "Por Lista":
-    sel = st.sidebar.selectbox("Buscar:", ["-- Seleccionar --"] + sorted(list(catalogo.keys())))
+if metodo == "Por Clic en Mapa / Lista":
+    st.sidebar.caption("💡 Haz clic sobre cualquier zona del mapa para inspeccionarla directamente.")
+    sel = st.sidebar.selectbox("O selecciona de la lista:", ["-- Seleccionar --"] + sorted(list(catalogo.keys())))
     if sel != "-- Seleccionar --":
         t = catalogo[sel]
         st.session_state.punto_eval = {
-            'lat': t['lat'], 'lon': t['lon'], 'nom': t['nombre'],
+            'lat': t['lat'], 'lon': t['lon'], 'nom': f"{t['nombre']} ({t['estado']})",
             'clave': t['clave'], 'vis': t['clave'] in claves_set
         }
 else:
@@ -149,7 +163,6 @@ else:
         lon_m = st.number_input("Longitud", value=lon_gps, format="%.6f")
         if st.form_submit_button("Inspeccionar Coordenada"):
             pt = Point(lon_m, lat_m)
-            # Evaluacion directa compatible sin depender de sindex
             match = gdf_actual[gdf_actual.contains(pt)]
             if not match.empty:
                 r = match.iloc[0]
@@ -163,10 +176,11 @@ else:
                 st.sidebar.warning("Coordenada fuera del territorio de la region.")
                 st.session_state.punto_eval = None
 
+# Panel de Confirmación
 if st.session_state.punto_eval:
     info = st.session_state.punto_eval
     st.sidebar.markdown("---")
-    st.sidebar.write(f"**Nombre:** {info['nom']}")
+    st.sidebar.write(f"**Lugar:** {info['nom']}")
     st.sidebar.write(f"**Codigo ID:** {info['clave']}")
     if info['vis']:
         st.sidebar.info("Ya registrado en tu lista.")
@@ -182,7 +196,7 @@ if st.session_state.punto_eval:
             st.session_state.punto_eval = None
             st.rerun()
 
-# Mapa
+# Mapa Interactivo
 center = [st.session_state.punto_eval['lat'], st.session_state.punto_eval['lon']] if st.session_state.punto_eval else [lat_gps, lon_gps]
 m = folium.Map(location=center, zoom_start=7 if pais_sel == "Estados Unidos" else 6, tiles="Cartodb Positron")
 
@@ -207,9 +221,32 @@ folium.GeoJson(
     geojson_data, 
     style_function=estilo,
     tooltip=folium.GeoJsonTooltip(
-        fields=['NOMGEO'] if pais_sel == "Mexico" else ['NAME'], 
-        aliases=['Lugar:']
+        fields=['NOMGEO', 'ESTADO_ABBR'] if pais_sel == "Mexico" else ['NAME', 'STATE'], 
+        aliases=['Lugar:', 'Estado:']
     )
 ).add_to(m)
 
-st_folium(m, width=1300, height=720)
+# Renderizar Mapa y Capturar Clics del Usuario
+mapa_out = st_folium(m, width=1300, height=720)
+
+# Procesar Clic sobre el Mapa
+if mapa_out and mapa_out.get('last_clicked'):
+    click_lat = mapa_out['last_clicked']['lat']
+    click_lon = mapa_out['last_clicked']['lng']
+    
+    pt = Point(click_lon, click_lat)
+    match = gdf_actual[gdf_actual.contains(pt)]
+    
+    if not match.empty:
+        r = match.iloc[0]
+        cve = str(r['CVEGEO' if pais_sel == "Mexico" else 'FIPS']).zfill(5)
+        nom = r.get('NOMGEO' if pais_sel == "Mexico" else 'NAME', 'Lugar')
+        est = r.get('ESTADO_ABBR' if pais_sel == "Mexico" else 'STATE', '')
+        
+        # Actualizar sesión si es un clic nuevo
+        if not st.session_state.punto_eval or st.session_state.punto_eval['clave'] != cve:
+            st.session_state.punto_eval = {
+                'lat': click_lat, 'lon': click_lon, 'nom': f"{nom} ({est})",
+                'clave': cve, 'vis': cve in claves_set
+            }
+            st.rerun()
