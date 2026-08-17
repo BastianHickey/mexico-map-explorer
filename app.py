@@ -17,7 +17,6 @@ MX_CSV = "mis_293_municipios_CON_CLAVE.csv"
 US_GEO = "usa_counties_simple.json.gz"
 US_CSV = "mis_condados_usa.csv"
 
-# Diccionario de Estados de México para la lista
 ESTADOS_MX = {
     '01': 'AGS', '02': 'BC', '03': 'BCS', '04': 'CAMP', '05': 'COAH', '06': 'COL',
     '07': 'CHIS', '08': 'CHIH', '09': 'CDMX', '10': 'DGO', '11': 'GTO', '12': 'GRO',
@@ -196,9 +195,19 @@ if st.session_state.punto_eval:
             st.session_state.punto_eval = None
             st.rerun()
 
-# Mapa Interactivo
+# Mapa Interactivo Base
 center = [st.session_state.punto_eval['lat'], st.session_state.punto_eval['lon']] if st.session_state.punto_eval else [lat_gps, lon_gps]
-m = folium.Map(location=center, zoom_start=7 if pais_sel == "Estados Unidos" else 6, tiles="Cartodb Positron")
+m = folium.Map(location=center, zoom_start=7 if pais_sel == "Estados Unidos" else 6, tiles=None)
+
+# 1. Capas Base Disponibles
+folium.TileLayer('Cartodb Positron', name='Mapa Claro (Defecto)').add_to(m)
+folium.TileLayer('Cartodb dark_matter', name='Mapa Oscuro').add_to(m)
+folium.TileLayer(
+    tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attr='Esri World Imagery',
+    name='Satelital (Esri)',
+    max_zoom=19
+).add_to(m)
 
 folium.Marker(location=[lat_gps, lon_gps], popup="GPS", icon=folium.Icon(color="red", icon="car", prefix="fa")).add_to(m)
 
@@ -206,19 +215,21 @@ if st.session_state.punto_eval:
     p = st.session_state.punto_eval
     folium.Marker(location=[p['lat'], p['lon']], popup=p['nom'], icon=folium.Icon(color="blue", icon="location-dot", prefix="fa")).add_to(m)
 
+# 2. Estilo Ajustado (Opacidad más alta para ver el fondo claramente)
 def estilo(feature):
     props = feature.get('properties', {})
     cve = str(props.get('CVEGEO' if pais_sel == "Mexico" else 'FIPS', '')).zfill(5)
     vis = cve in claves_set
     return {
         'fillColor': '#2ea44f' if vis else '#e3e8ec',
-        'color': '#134e23' if vis else '#8c959f',
-        'weight': 0.6 if vis else 0.15,
-        'fillOpacity': 0.85 if vis else 0.2
+        'color': '#0d3818' if vis else '#57606a',
+        'weight': 1.0 if vis else 0.3,
+        'fillOpacity': 0.38 if vis else 0.08  # Opacidad reducida para no tapar terrenos/calles
     }
 
 folium.GeoJson(
     geojson_data, 
+    name="Capa de Territorio",
     style_function=estilo,
     tooltip=folium.GeoJsonTooltip(
         fields=['NOMGEO', 'ESTADO_ABBR'] if pais_sel == "Mexico" else ['NAME', 'STATE'], 
@@ -226,10 +237,12 @@ folium.GeoJson(
     )
 ).add_to(m)
 
-# Renderizar Mapa y Capturar Clics del Usuario
+# Control de Capas en la esquina superior derecha
+folium.LayerControl(position='topright').add_to(m)
+
+# Renderizado y Clics
 mapa_out = st_folium(m, width=1300, height=720)
 
-# Procesar Clic sobre el Mapa
 if mapa_out and mapa_out.get('last_clicked'):
     click_lat = mapa_out['last_clicked']['lat']
     click_lon = mapa_out['last_clicked']['lng']
@@ -243,7 +256,6 @@ if mapa_out and mapa_out.get('last_clicked'):
         nom = r.get('NOMGEO' if pais_sel == "Mexico" else 'NAME', 'Lugar')
         est = r.get('ESTADO_ABBR' if pais_sel == "Mexico" else 'STATE', '')
         
-        # Actualizar sesión si es un clic nuevo
         if not st.session_state.punto_eval or st.session_state.punto_eval['clave'] != cve:
             st.session_state.punto_eval = {
                 'lat': click_lat, 'lon': click_lon, 'nom': f"{nom} ({est})",
