@@ -11,7 +11,6 @@ import gzip
 
 st.set_page_config(page_title="World Map Explorer - ATS", layout="wide")
 
-# Rutas de archivos
 MX_GEO = "municipios_mexico_simple.json.gz"
 MX_CSV = "mis_293_municipios_CON_CLAVE.csv"
 
@@ -44,12 +43,18 @@ def cargar_mapa_us():
     with gzip.open(US_GEO, "rb") as f_in:
         bytes_data = f_in.read()
     gdf = gpd.read_file(io.BytesIO(bytes_data))
-    gdf['FIPS'] = gdf['id'].astype(str).str.zfill(5)
+    
+    # Manejo seguro de la columna id / FIPS
+    if 'id' in gdf.columns:
+        gdf['FIPS'] = gdf['id'].astype(str).str.zfill(5)
+    else:
+        gdf['FIPS'] = gdf['GEO_ID_FIPS'].astype(str).str.zfill(5)
+        
     gdf['centroide'] = gdf.geometry.centroid
     
     cat = {}
     for _, row in gdf.iterrows():
-        label = f"{row.get('NAME', 'County')}, {row.get('STATE', '')}"
+        label = f"{row.get('NAME', 'County')}, {row.get('STATE', 'US')}"
         cat[label] = {
             'clave': row['FIPS'],
             'nombre': row.get('NAME', 'County'),
@@ -57,13 +62,28 @@ def cargar_mapa_us():
             'lon': row['centroide'].x
         }
     geojson = json.loads(bytes_data.decode("utf-8"))
+    
+    # Asegurar id en properties para Folium
+    for feat in geojson['features']:
+        if 'properties' in feat:
+            feat['properties']['FIPS'] = str(feat.get('id', feat['properties'].get('FIPS', ''))).zfill(5)
+            
     return gdf, cat, geojson
 
-# Selector de País en Sidebar
+# Sidebar y Selector
 st.sidebar.title("World Map Explorer")
-pais_sel = st.sidebar.selectbox("Selecciona Región:", ["México 🇲🇽", "Estados Unidos 🇺🇸"])
 
-if pais_sel == "México 🇲🇽":
+# Limpiar selección al cambiar de región para evitar crasheo
+def limpiar_estado():
+    st.session_state.punto_eval = None
+
+pais_sel = st.sidebar.selectbox(
+    "Selecciona Region:", 
+    ["Mexico", "Estados Unidos"],
+    on_change=limpiar_estado
+)
+
+if pais_sel == "Mexico":
     gdf_actual, catalogo, geojson_data = cargar_mapa_mx()
     df_vis = pd.read_csv(MX_CSV, dtype=str)
     claves_set = set(df_vis['CVEGEO'].dropna().str.zfill(5))
@@ -79,12 +99,12 @@ else:
     except:
         df_vis = pd.DataFrame(columns=['FIPS', 'County_Nombre', 'Estado_Code'])
         claves_set = set()
-    total_muni = 3143 # Total de condados en EE.UU.
+    total_muni = 3143
     clave_col = 'FIPS'
     csv_actual = US_CSV
     label_entidad = "Condados"
 
-# Métrica de Progreso
+# Metrica de Progreso
 total_vis = len(claves_set)
 pct = (total_vis / total_muni) * 100
 st.sidebar.metric(f"{label_entidad} Desbloqueados", f"{total_vis} / {total_muni:,}", f"{pct:.1f}%")
@@ -93,7 +113,7 @@ st.sidebar.markdown("---")
 
 # GPS Nativo
 loc = get_geolocation()
-lat_gps, lon_gps = (38.5816, -121.4944) if pais_sel == "Estados Unidos 🇺🇸" else (20.6760, -103.3470)
+lat_gps, lon_gps = (38.5816, -121.4944) if pais_sel == "Estados Unidos" else (20.6760, -103.3470)
 
 if loc and 'coords' in loc:
     lat_gps = loc['coords']['latitude']
@@ -102,7 +122,7 @@ if loc and 'coords' in loc:
 
 # Buscador Dual
 st.sidebar.subheader(f"Desbloquear {label_entidad[:-1]}")
-metodo = st.sidebar.radio("Método:", ["Por Lista", "Por Coordenadas"])
+metodo = st.sidebar.radio("Metodo:", ["Por Lista", "Por Coordenadas"])
 
 if "punto_eval" not in st.session_state:
     st.session_state.punto_eval = None
@@ -125,8 +145,8 @@ else:
             match = pos[pos.contains(pt)]
             if not match.empty:
                 r = match.iloc[0]
-                cve = str(r['CVEGEO' if pais_sel == "México 🇲🇽" else 'id']).zfill(5)
-                nom = r.get('NOMGEO' if pais_sel == "México 🇲🇽" else 'NAME', 'Lugar')
+                cve = str(r['CVEGEO' if pais_sel == "Mexico" else 'FIPS']).zfill(5)
+                nom = r.get('NOMGEO' if pais_sel == "Mexico" else 'NAME', 'Lugar')
                 st.session_state.punto_eval = {
                     'lat': lat_m, 'lon': lon_m, 'nom': nom,
                     'clave': cve, 'vis': cve in claves_set
@@ -136,12 +156,12 @@ if st.session_state.punto_eval:
     info = st.session_state.punto_eval
     st.sidebar.markdown("---")
     st.sidebar.write(f"**Nombre:** {info['nom']}")
-    st.sidebar.write(f"**Código ID:** {info['clave']}")
+    st.sidebar.write(f"**Codigo ID:** {info['clave']}")
     if info['vis']:
         st.sidebar.info("Ya registrado en tu lista.")
     else:
         if st.sidebar.button("Confirmar y Desbloquear"):
-            if pais_sel == "México 🇲🇽":
+            if pais_sel == "Mexico":
                 nueva = pd.DataFrame([{'MapChart_ID': f"{info['nom']}_{info['clave']}", 'Municipio_Nombre': info['nom'], 'Estado_Sufijo': 'N/A', 'CVE_ENT': info['clave'][:2], 'Nom_Limpio': info['nom'].upper(), 'CVEGEO': info['clave']}])
             else:
                 nueva = pd.DataFrame([{'FIPS': info['clave'], 'County_Nombre': info['nom'], 'Estado_Code': info['clave'][:2]}])
@@ -153,7 +173,7 @@ if st.session_state.punto_eval:
 
 # Renderizado de Mapa
 center = [st.session_state.punto_eval['lat'], st.session_state.punto_eval['lon']] if st.session_state.punto_eval else [lat_gps, lon_gps]
-m = folium.Map(location=center, zoom_start=7 if pais_sel == "Estados Unidos 🇺🇸" else 6, tiles="Cartodb Positron")
+m = folium.Map(location=center, zoom_start=7 if pais_sel == "Estados Unidos" else 6, tiles="Cartodb Positron")
 
 folium.Marker(location=[lat_gps, lon_gps], popup="GPS", icon=folium.Icon(color="red", icon="car", prefix="fa")).add_to(m)
 
@@ -162,7 +182,8 @@ if st.session_state.punto_eval:
     folium.Marker(location=[p['lat'], p['lon']], popup=p['nom'], icon=folium.Icon(color="blue", icon="location-dot", prefix="fa")).add_to(m)
 
 def estilo(feature):
-    cve = str(feature.get('properties', {}).get('CVEGEO' if pais_sel == "México 🇲🇽" else 'id', '')).zfill(5)
+    props = feature.get('properties', {})
+    cve = str(props.get('CVEGEO' if pais_sel == "Mexico" else 'FIPS', feature.get('id', ''))).zfill(5)
     vis = cve in claves_set
     return {
         'fillColor': '#2ea44f' if vis else '#e3e8ec',
