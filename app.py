@@ -17,10 +17,10 @@ MX_CSV = "mis_293_municipios_CON_CLAVE.csv"
 US_GEO = "usa_counties_simple.json.gz"
 US_CSV = "mis_condados_usa.csv"
 
-# Carga individual bajo demanda para no saturar la memoria RAM del servidor
+# Carga individual bajo demanda para optimizar memoria RAM
 @st.cache_data(max_entries=1)
 def cargar_mapa_mx():
-    gc.collect() # Limpiar residuos de memoria
+    gc.collect()
     with gzip.open(MX_GEO, "rt", encoding="utf-8") as f:
         geojson = json.load(f)
         
@@ -49,7 +49,7 @@ def cargar_mapa_mx():
 
 @st.cache_data(max_entries=1)
 def cargar_mapa_us():
-    gc.collect() # Limpiar residuos de memoria
+    gc.collect()
     with gzip.open(US_GEO, "rt", encoding="utf-8") as f:
         geojson = json.load(f)
         
@@ -87,7 +87,7 @@ if "punto_eval" not in st.session_state:
 
 def limpiar_estado_y_memoria():
     st.session_state.punto_eval = None
-    st.cache_data.clear() # Limpiar mapas anteriores de la RAM
+    st.cache_data.clear()
     gc.collect()
 
 pais_sel = st.sidebar.selectbox(
@@ -149,8 +149,8 @@ else:
         lon_m = st.number_input("Longitud", value=lon_gps, format="%.6f")
         if st.form_submit_button("Inspeccionar Coordenada"):
             pt = Point(lon_m, lat_m)
-            pos = gdf_actual[gdf_actual.sindex.contains(pt)]
-            match = pos[pos.contains(pt)]
+            # Evaluacion directa compatible sin depender de sindex
+            match = gdf_actual[gdf_actual.contains(pt)]
             if not match.empty:
                 r = match.iloc[0]
                 cve = str(r['CVEGEO' if pais_sel == "Mexico" else 'FIPS']).zfill(5)
@@ -159,6 +159,9 @@ else:
                     'lat': lat_m, 'lon': lon_m, 'nom': nom,
                     'clave': cve, 'vis': cve in claves_set
                 }
+            else:
+                st.sidebar.warning("Coordenada fuera del territorio de la region.")
+                st.session_state.punto_eval = None
 
 if st.session_state.punto_eval:
     info = st.session_state.punto_eval
