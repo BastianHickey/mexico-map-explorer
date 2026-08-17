@@ -13,10 +13,17 @@ CSV_PATH = "mis_293_municipios_CON_CLAVE.csv"
 GEOJSON_PATH = "municipios_mexico_simple.json.gz"
 
 # 1. Carga ultra-rápida indexada en GeoPandas
+import io
+import gzip
+
 @st.cache_data
 def cargar_base_espacial():
-    # GeoPandas lee directamente archivos .gz o .zip
-    gdf = gpd.read_file(GEOJSON_PATH)
+    # 1. Leer y descomprimir el .gz directamente en memoria
+    with gzip.open(GEOJSON_PATH, "rb") as f_in:
+        bytes_data = f_in.read()
+    
+    # 2. Cargar GeoPandas desde los bytes en memoria
+    gdf = gpd.read_file(io.BytesIO(bytes_data))
     gdf['CVEGEO'] = gdf['CVEGEO'].astype(str).str.zfill(5)
     
     gdf['centroide'] = gdf.geometry.centroid
@@ -33,10 +40,8 @@ def cargar_base_espacial():
             'lon': row['lon_cent']
         }
         
-    # Leer JSON comprimido
-    import gzip
-    with gzip.open(GEOJSON_PATH, "rt", encoding="utf-8") as f:
-        geojson = json.load(f)
+    # 3. Decodificar el JSON para Folium
+    geojson = json.loads(bytes_data.decode("utf-8"))
         
     return gdf, cat_nombres, geojson
 
