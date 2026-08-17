@@ -4,9 +4,8 @@ import json
 import geopandas as gpd
 import folium
 from streamlit_folium import st_folium
-from shapely.geometry import Point
+from shapely.geometry import Point, shape
 from streamlit_js_eval import get_geolocation
-import io
 import gzip
 
 st.set_page_config(page_title="World Map Explorer - ATS", layout="wide")
@@ -17,63 +16,65 @@ MX_CSV = "mis_293_municipios_CON_CLAVE.csv"
 US_GEO = "usa_counties_simple.json.gz"
 US_CSV = "mis_condados_usa.csv"
 
-# 1. Carga optimizada
+# Carga ultra ligera sin PyOGRIO / GDAL (Cero lag, cero errores de formato)
 @st.cache_data
 def cargar_mapa_mx():
-    with gzip.open(MX_GEO, "rb") as f_in:
-        bytes_data = f_in.read()
-    gdf = gpd.read_file(io.BytesIO(bytes_data))
-    gdf['CVEGEO'] = gdf['CVEGEO'].astype(str).str.zfill(5)
-    gdf['centroide'] = gdf.geometry.centroid
-    
-    cat = {}
-    for _, row in gdf.iterrows():
-        label = f"{row.get('NOMGEO', 'Municipio')} ({row['CVEGEO'][:2]})"
-        cat[label] = {
-            'clave': row['CVEGEO'],
-            'nombre': row.get('NOMGEO', 'Municipio'),
-            'lat': row['centroide'].y,
-            'lon': row['centroide'].x
-        }
-    geojson = json.loads(bytes_data.decode("utf-8"))
-    
-    # Inyectar CVEGEO limpio en properties
-    for feat in geojson['features']:
-        props = feat.setdefault('properties', {})
-        props['CVEGEO'] = str(props.get('CVEGEO', '')).zfill(5)
+    with gzip.open(MX_GEO, "rt", encoding="utf-8") as f:
+        geojson = json.load(f)
         
+    features = geojson['features']
+    cat = {}
+    
+    for feat in features:
+        props = feat.setdefault('properties', {})
+        cve = str(props.get('CVEGEO', '')).zfill(5)
+        props['CVEGEO'] = cve
+        nom = props.get('NOMGEO', 'Municipio')
+        
+        # Geometría básica para centroide rápido
+        geom = shape(feat['geometry'])
+        cent = geom.centroid
+        
+        label = f"{nom} ({cve[:2]})"
+        cat[label] = {
+            'clave': cve,
+            'nombre': nom,
+            'lat': cent.y,
+            'lon': cent.x
+        }
+        
+    gdf = gpd.GeoDataFrame.from_features(features, crs="EPSG:4326")
     return gdf, cat, geojson
 
 @st.cache_data
 def cargar_mapa_us():
-    with gzip.open(US_GEO, "rb") as f_in:
-        bytes_data = f_in.read()
-    gdf = gpd.read_file(io.BytesIO(bytes_data))
-    
-    if 'id' in gdf.columns:
-        gdf['FIPS'] = gdf['id'].astype(str).str.zfill(5)
-    else:
-        gdf['FIPS'] = gdf['GEO_ID_FIPS'].astype(str).str.zfill(5)
+    with gzip.open(US_GEO, "rt", encoding="utf-8") as f:
+        geojson = json.load(f)
         
-    gdf['centroide'] = gdf.geometry.centroid
-    
+    features = geojson['features']
     cat = {}
-    for _, row in gdf.iterrows():
-        label = f"{row.get('NAME', 'County')}, {row.get('STATE', 'US')}"
-        cat[label] = {
-            'clave': row['FIPS'],
-            'nombre': row.get('NAME', 'County'),
-            'lat': row['centroide'].y,
-            'lon': row['centroide'].x
-        }
-    geojson = json.loads(bytes_data.decode("utf-8"))
     
-    # Inyectar FIPS obligatorio dentro de properties para evitar colapsos en Folium
-    for feat in geojson['features']:
+    for feat in features:
         props = feat.setdefault('properties', {})
         fips_val = feat.get('id', props.get('FIPS', props.get('GEO_ID_FIPS', '')))
-        props['FIPS'] = str(fips_val).zfill(5)
-            
+        fips = str(fips_val).zfill(5)
+        props['FIPS'] = fips
+        nom = props.get('NAME', 'County')
+        state = props.get('STATE', 'US')
+        
+        geom = shape(feat['geometry'])
+        cent = geom.centroid
+        
+        label = f"{nom}, {state}"
+        cat[label] = {
+            'clave': fips,
+            'nombre': nom,
+            'lat': cent.y,
+            'lon': cent.x
+        }
+        
+    gdf = gpd.GeoDataFrame.from_features(features, crs="EPSG:4326")
+    gdf['FIPS'] = gdf['FIPS'].astype(str).str.zfill(5)
     return gdf, cat, geojson
 
 # Sidebar y Selector
@@ -96,7 +97,6 @@ if pais_sel == "Mexico":
     df_vis = pd.read_csv(MX_CSV, dtype=str)
     claves_set = set(df_vis['CVEGEO'].dropna().str.zfill(5))
     total_muni = 2478
-    clave_col = 'CVEGEO'
     csv_actual = MX_CSV
     label_entidad = "Municipios"
 else:
@@ -108,11 +108,10 @@ else:
         df_vis = pd.DataFrame(columns=['FIPS', 'County_Nombre', 'Estado_Code'])
         claves_set = set()
     total_muni = 3143
-    clave_col = 'FIPS'
     csv_actual = US_CSV
     label_entidad = "Condados"
 
-# Metrica de Progreso
+# Métricas
 total_vis = len(claves_set)
 pct = (total_vis / total_muni) * 100
 st.sidebar.metric(f"{label_entidad} Desbloqueados", f"{total_vis} / {total_muni:,}", f"{pct:.1f}%")
@@ -176,7 +175,7 @@ if st.session_state.punto_eval:
             st.session_state.punto_eval = None
             st.rerun()
 
-# Renderizado de Mapa
+# Mapa
 center = [st.session_state.punto_eval['lat'], st.session_state.punto_eval['lon']] if st.session_state.punto_eval else [lat_gps, lon_gps]
 m = folium.Map(location=center, zoom_start=7 if pais_sel == "Estados Unidos" else 6, tiles="Cartodb Positron")
 
