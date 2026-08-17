@@ -1,0 +1,299 @@
+MapChart_ID,Municipio_Nombre,Estado_Sufijo,CVE_ENT,Nom_Limpio,CVEGEO
+Guadalajara_JAL,Guadalajara,JAL,14,GUADALAJARA,14039
+Tonalá_JAL,Tonalá,JAL,14,TONALA,14101
+Zapotlanejo_JAL,Zapotlanejo,JAL,14,ZAPOTLANEJO,14124
+Acatic_JAL,Acatic,JAL,14,ACATIC,14001
+Tepatitlán_de_Morelos_JAL,Tepatitlán de Morelos,JAL,14,TEPATITLAN DE MORELOS,14093
+San_Juan_de_los_Lagos_JAL,San Juan de los Lagos,JAL,14,SAN JUAN DE LOS LAGOS,14073
+Lagos_de_Moreno_JAL,Lagos de Moreno,JAL,14,LAGOS DE MORENO,14053
+Jalostotitlán_JAL,Jalostotitlán,JAL,14,JALOSTOTITLAN,14046
+San_Miguel_el_Alto_JAL,San Miguel el Alto,JAL,14,SAN MIGUEL EL ALTO,14078
+Valle_de_Guadalupe_JAL,Valle de Guadalupe,JAL,14,VALLE DE GUADALUPE,14111
+Unión_de_San_Antonio_JAL,Unión de San Antonio,JAL,14,UNION DE SAN ANTONIO,14109
+Encarnación_de_Díaz_JAL,Encarnación de Díaz,JAL,14,ENCARNACION DE DIAZ,14035
+León_GUA,León,GUA,11,LEON,11020
+Silao_de_la_Victoria_GUA,Silao de la Victoria,GUA,11,SILAO DE LA VICTORIA,11037
+Irapuato_GUA,Irapuato,GUA,11,IRAPUATO,11017
+Salamanca_GUA,Salamanca,GUA,11,SALAMANCA,11027
+Villagrán_GUA,Villagrán,GUA,11,VILLAGRAN,11044
+Cortazar_GUA,Cortazar,GUA,11,CORTAZAR,11011
+Celaya_GUA,Celaya,GUA,11,CELAYA,11007
+Apaseo_el_Grande_GUA,Apaseo el Grande,GUA,11,APASEO EL GRANDE,11005
+Apaseo_el_Alto_GUA,Apaseo el Alto,GUA,11,APASEO EL ALTO,11004
+Corregidora_QUE,Corregidora,QUE,22,CORREGIDORA,22006
+Huimilpan_QUE,Huimilpan,QUE,22,HUIMILPAN,22008
+Amealco_de_Bonfil_QUE,Amealco de Bonfil,QUE,22,AMEALCO DE BONFIL,22001
+San_Juan_del_Río_QUE,San Juan del Río,QUE,22,SAN JUAN DEL RIO,22016
+Nopala_de_Villagrán_HID,Nopala de Villagrán,HID,13,NOPALA DE VILLAGRAN,13044
+Tepeji_del_Río_de_Ocampo_HID,Tepeji del Río de Ocampo,HID,13,TEPEJI DEL RIO DE OCAMPO,13063
+Tula_de_Allende_HID,Tula de Allende,HID,13,TULA DE ALLENDE,13076
+Atotonilco_de_Tula_HID,Atotonilco de Tula,HID,13,ATOTONILCO DE TULA,13013
+Tolcayuca_HID,Tolcayuca,HID,13,TOLCAYUCA,13075
+Villa_de_Tezontepec_HID,Villa de Tezontepec,HID,13,VILLA DE TEZONTEPEC,13066
+Zapotlán_de_Juárez_HID,Zapotlán de Juárez,HID,13,ZAPOTLAN DE JUAREZ,13082
+Tlanalapa_HID,Tlanalapa,HID,13,TLANALAPA,13072
+Emiliano_Zapata_HID,Emiliano Zapata,HID,13,EMILIANO ZAPATA,13021
+Tequixquiac_MEX,Tequixquiac,MEX,15,TEQUIXQUIAC,15096
+Hueypoxtla_MEX,Hueypoxtla,MEX,15,HUEYPOXTLA,15036
+Axapusco_MEX,Axapusco,MEX,15,AXAPUSCO,15016
+Otumba_MEX,Otumba,MEX,15,OTUMBA,15065
+Calpulalpan_TLA,Calpulalpan,TLA,29,CALPULALPAN,29006
+Nanacamilpa_de_Mariano_Arista_TLA,Nanacamilpa de Mariano Arista,TLA,29,NANACAMILPA DE MARIANO ARISTA,29021
+Natívitas_TLA,Natívitas,TLA,29,NATIVITAS,29023
+Tepetitla_de_Lardizábal_TLA,Tepetitla de Lardizábal,TLA,29,TEPETITLA DE LARDIZABAL,29019
+San_Martín_Texmelucan_PUE,San Martín Texmelucan,PUE,21,SAN MARTIN TEXMELUCAN,21132
+Huejotzingo_PUE,Huejotzingo,PUE,21,HUEJOTZINGO,21074
+Juan_C_Bonilla_PUE,Juan C Bonilla,PUE,21,JUAN C BONILLA,
+San_Pedro_Cholula_PUE,San Pedro Cholula,PUE,21,SAN PEDRO CHOLULA,21140
+Cuautlancingo_PUE,Cuautlancingo,PUE,21,CUAUTLANCINGO,21041
+Puebla_PUE,Puebla,PUE,21,PUEBLA,21114
+Amozoc_PUE,Amozoc,PUE,21,AMOZOC,21015
+Tepatlaxco_de_Hidalgo_PUE,Tepatlaxco de Hidalgo,PUE,21,TEPATLAXCO DE HIDALGO,21163
+Acajete_PUE,Acajete,PUE,21,ACAJETE,21001
+Nopalucan_PUE,Nopalucan,PUE,21,NOPALUCAN,21104
+San_José_Chiapa_PUE,San José Chiapa,PUE,21,SAN JOSE CHIAPA,21128
+Oriental_PUE,Oriental,PUE,21,ORIENTAL,21108
+Tepeyahualco_PUE,Tepeyahualco,PUE,21,TEPEYAHUALCO,21170
+Perote_VER,Perote,VER,30,PEROTE,30128
+Villa_Aldama_VER,Villa Aldama,VER,30,VILLA ALDAMA,30194
+Las_Vigas_de_Ramírez_VER,Las Vigas de Ramírez,VER,30,LAS VIGAS DE RAMIREZ,30132
+Acajete_VER,Acajete,VER,30,ACAJETE,30001
+Xalapa_VER,Xalapa,VER,30,XALAPA,30087
+Emiliano_Zapata_VER,Emiliano Zapata,VER,30,EMILIANO ZAPATA,30065
+La_Antigua_VER,La Antigua,VER,30,LA ANTIGUA,30016
+Veracruz_VER,Veracruz,VER,30,VERACRUZ,30193
+Medellín_VER,Medellín,VER,30,MEDELLIN,
+Boca_del_Río_VER,Boca del Río,VER,30,BOCA DEL RIO,30028
+Puente_Nacional_VER,Puente Nacional,VER,30,PUENTE NACIONAL,30134
+Jamapa_VER,Jamapa,VER,30,JAMAPA,30090
+Cotaxtla_VER,Cotaxtla,VER,30,COTAXTLA,30049
+Cuitláhuac_VER,Cuitláhuac,VER,30,CUITLAHUAC,30053
+Carrillo_Puerto_VER,Carrillo Puerto,VER,30,CARRILLO PUERTO,30031
+Tierra_Blanca_VER,Tierra Blanca,VER,30,TIERRA BLANCA,30174
+Isla_VER,Isla,VER,30,ISLA,30077
+José_Azueta_VER,José Azueta,VER,30,JOSE AZUETA,30169
+Chacaltianguis_VER,Chacaltianguis,VER,30,CHACALTIANGUIS,30054
+Juan_Rodríguez_Clara_VER,Juan Rodríguez Clara,VER,30,JUAN RODRIGUEZ CLARA,30094
+San_Juan_Evangelista_VER,San Juan Evangelista,VER,30,SAN JUAN EVANGELISTA,30142
+Acayucan_VER,Acayucan,VER,30,ACAYUCAN,30003
+Oluta_VER,Oluta,VER,30,OLUTA,30116
+Jáltipan_VER,Jáltipan,VER,30,JALTIPAN,30089
+Zaragoza_VER,Zaragoza,VER,30,ZARAGOZA,30199
+Cosoleacaque_VER,Cosoleacaque,VER,30,COSOLEACAQUE,30048
+Minatitlán_VER,Minatitlán,VER,30,MINATITLAN,30108
+Coatzacoalcos_VER,Coatzacoalcos,VER,30,COATZACOALCOS,30039
+Agua_Dulce_VER,Agua Dulce,VER,30,AGUA DULCE,30204
+Huimanguillo_TAB,Huimanguillo,TAB,27,HUIMANGUILLO,27008
+Nacajuca_TAB,Nacajuca,TAB,27,NACAJUCA,27013
+Cárdenas_TAB,Cárdenas,TAB,27,CARDENAS,27002
+Cunduacán_TAB,Cunduacán,TAB,27,CUNDUACAN,27006
+Centro_TAB,Centro,TAB,27,CENTRO,27004
+Centla_TAB,Centla,TAB,27,CENTLA,27003
+Carmen_CAM,Carmen,CAM,04,CARMEN,04003
+Champotón_CAM,Champotón,CAM,04,CHAMPOTON,04004
+Seybaplaya_CAM,Seybaplaya,CAM,04,SEYBAPLAYA,04012
+Campeche_CAM,Campeche,CAM,04,CAMPECHE,04002
+Tenabo_CAM,Tenabo,CAM,04,TENABO,04008
+Hecelchakán_CAM,Hecelchakán,CAM,04,HECELCHAKAN,04005
+Calkiní_CAM,Calkiní,CAM,04,CALKINI,04001
+Umán_YUC,Umán,YUC,31,UMAN,31101
+Mérida_YUC,Mérida,YUC,31,MERIDA,31050
+Chocholá_YUC,Chocholá,YUC,31,CHOCHOLA,31023
+Maxcanú_YUC,Maxcanú,YUC,31,MAXCANU,31048
+Halachó_YUC,Halachó,YUC,31,HALACHO,31033
+Kopomá_YUC,Kopomá,YUC,31,KOPOMA,31045
+Polotitlán_MEX,Polotitlán,MEX,15,POLOTITLAN,15071
+Huichapan_HID,Huichapan,HID,13,HUICHAPAN,13029
+Jilotepec_MEX,Jilotepec,MEX,15,JILOTEPEC,15045
+Nopaltepec_MEX,Nopaltepec,MEX,15,NOPALTEPEC,15061
+Españita_TLA,Españita,TLA,29,ESPANITA,29012
+Ixtacuixtla_de_Mariano_Matamoros_TLA,Ixtacuixtla de Mariano Matamoros,TLA,29,IXTACUIXTLA DE MARIANO MATAMOROS,29015
+Tlahuapan_PUE,Tlahuapan,PUE,21,TLAHUAPAN,21180
+San_Salvador_el_Verde_PUE,San Salvador el Verde,PUE,21,SAN SALVADOR EL VERDE,21143
+Rafael_Lucio_VER,Rafael Lucio,VER,30,RAFAEL LUCIO,30136
+Banderilla_VER,Banderilla,VER,30,BANDERILLA,30026
+Paso_de_Ovejas_VER,Paso de Ovejas,VER,30,PASO DE OVEJAS,30126
+Tres_Valles_VER,Tres Valles,VER,30,TRES VALLES,30207
+Cosamaloapan_de_Carpio_VER,Cosamaloapan de Carpio,VER,30,COSAMALOAPAN DE CARPIO,30045
+Sayula_de_Alemán_VER,Sayula de Alemán,VER,30,SAYULA DE ALEMAN,30144
+Texistepec_VER,Texistepec,VER,30,TEXISTEPEC,30172
+Soconusco_VER,Soconusco,VER,30,SOCONUSCO,30145
+Nanchital_de_Lázaro_Cárdenas_del_Río_VER,Nanchital de Lázaro Cárdenas del Río,VER,30,NANCHITAL DE LAZARO CARDENAS DEL RIO,30206
+Moloacán_VER,Moloacán,VER,30,MOLOACAN,30111
+Cuapiaxtla_TLA,Cuapiaxtla,TLA,29,CUAPIAXTLA,29008
+Huamantla_TLA,Huamantla,TLA,29,HUAMANTLA,29013
+Ixtenco_TLA,Ixtenco,TLA,29,IXTENCO,29016
+Tocatlán_TLA,Tocatlán,TLA,29,TOCATLAN,29035
+Tzompantepec_TLA,Tzompantepec,TLA,29,TZOMPANTEPEC,29038
+Apizaco_TLA,Apizaco,TLA,29,APIZACO,29005
+Yauhquemehcan_TLA,Yauhquemehcan,TLA,29,YAUHQUEMEHCAN,29043
+Xaltocan_TLA,Xaltocan,TLA,29,XALTOCAN,29040
+Muñoz_de_Domingo_Arenas_TLA,Muñoz de Domingo Arenas,TLA,29,MUNOZ DE DOMINGO ARENAS,29011
+Hueyotlipan_TLA,Hueyotlipan,TLA,29,HUEYOTLIPAN,29014
+Sanctórum_de_Lázaro_Cárdenas_TLA,Sanctórum de Lázaro Cárdenas,TLA,29,SANCTORUM DE LAZARO CARDENAS,29020
+Querétaro_QUE,Querétaro,QUE,22,QUERETARO,22014
+Comonfort_GUA,Comonfort,GUA,11,COMONFORT,11009
+Santa_Cruz_de_Juventino_Rosas_GUA,Santa Cruz de Juventino Rosas,GUA,11,SANTA CRUZ DE JUVENTINO ROSAS,11035
+Abasolo_GUA,Abasolo,GUA,11,ABASOLO,11001
+Pénjamo_GUA,Pénjamo,GUA,11,PENJAMO,11023
+La_Piedad_MIC,La Piedad,MIC,16,LA PIEDAD,16069
+Yurécuaro_MIC,Yurécuaro,MIC,16,YURECUARO,16106
+Tanhuato_MIC,Tanhuato,MIC,16,TANHUATO,16086
+Ecuandureo_MIC,Ecuandureo,MIC,16,ECUANDUREO,16030
+La_Barca_JAL,La Barca,JAL,14,LA BARCA,14018
+Atotonilco_el_Alto_JAL,Atotonilco el Alto,JAL,14,ATOTONILCO EL ALTO,14013
+Tototlán_JAL,Tototlán,JAL,14,TOTOTLAN,14105
+Hunucmá_YUC,Hunucmá,YUC,31,HUNUCMA,31038
+Celestún_YUC,Celestún,YUC,31,CELESTUN,31011
+Progreso_YUC,Progreso,YUC,31,PROGRESO,31059
+Ucú_YUC,Ucú,YUC,31,UCU,31100
+Sinanché_YUC,Sinanché,YUC,31,SINANCHE,31068
+Telchac_Puerto_YUC,Telchac Puerto,YUC,31,TELCHAC PUERTO,31083
+Dzemul_YUC,Dzemul,YUC,31,DZEMUL,31026
+Ixil_YUC,Ixil,YUC,31,IXIL,31039
+Telchac_Pueblo_YUC,Telchac Pueblo,YUC,31,TELCHAC PUEBLO,31082
+Motul_YUC,Motul,YUC,31,MOTUL,31052
+Baca_YUC,Baca,YUC,31,BACA,31004
+Mocochá_YUC,Mocochá,YUC,31,MOCOCHA,31051
+Conkal_YUC,Conkal,YUC,31,CONKAL,31013
+Benito_Juárez_ROO,Benito Juárez,ROO,23,BENITO JUAREZ,23005
+Abalá_YUC,Abalá,YUC,31,ABALA,31001
+Sacalum_YUC,Sacalum,YUC,31,SACALUM,31062
+Muna_YUC,Muna,YUC,31,MUNA,31053
+Santa_Elena_YUC,Santa Elena,YUC,31,SANTA ELENA,31066
+Kanasín_YUC,Kanasín,YUC,31,KANASIN,31041
+Tixpéhual_YUC,Tixpéhual,YUC,31,TIXPEHUAL,31095
+Tahmek_YUC,Tahmek,YUC,31,TAHMEK,31074
+Acanceh_YUC,Acanceh,YUC,31,ACANCEH,31002
+Seyé_YUC,Seyé,YUC,31,SEYE,31067
+Hoctún_YUC,Hoctún,YUC,31,HOCTUN,31035
+Izamal_YUC,Izamal,YUC,31,IZAMAL,31040
+Xocchel_YUC,Xocchel,YUC,31,XOCCHEL,31103
+Kantunil_YUC,Kantunil,YUC,31,KANTUNIL,31042
+Sudzal_YUC,Sudzal,YUC,31,SUDZAL,31071
+Valladolid_YUC,Valladolid,YUC,31,VALLADOLID,31102
+Uayma_YUC,Uayma,YUC,31,UAYMA,31099
+Tekom_YUC,Tekom,YUC,31,TEKOM,31081
+Cuncunul_YUC,Cuncunul,YUC,31,CUNCUNUL,31014
+Tinum_YUC,Tinum,YUC,31,TINUM,31091
+Tepakán_YUC,Tepakán,YUC,31,TEPAKAN,31086
+Cacalchén_YUC,Cacalchén,YUC,31,CACALCHEN,31007
+Temozón_YUC,Temozón,YUC,31,TEMOZON,31085
+Calotmul_YUC,Calotmul,YUC,31,CALOTMUL,31008
+Tizimín_YUC,Tizimín,YUC,31,TIZIMIN,31096
+Sucilá_YUC,Sucilá,YUC,31,SUCILA,31070
+Buctzotz_YUC,Buctzotz,YUC,31,BUCTZOTZ,31006
+Temax_YUC,Temax,YUC,31,TEMAX,31084
+Cansahcab_YUC,Cansahcab,YUC,31,CANSAHCAB,31009
+Suma_YUC,Suma,YUC,31,SUMA,31072
+Dzitás_YUC,Dzitás,YUC,31,DZITAS,31030
+Quintana_Roo_YUC,Quintana Roo,YUC,31,QUINTANA ROO,31060
+Tunkás_YUC,Tunkás,YUC,31,TUNKAS,31097
+Yaxcabá_YUC,Yaxcabá,YUC,31,YAXCABA,31104
+Kaua_YUC,Kaua,YUC,31,KAUA,31043
+Chihuahua_CHH,Chihuahua,CHH,08,CHIHUAHUA,08019
+Los_Cabos_BCS,Los Cabos,BCS,03,LOS CABOS,03008
+Cuauhtémoc_CMX,Cuauhtémoc,CMX,09,CUAUHTEMOC,09015
+Miguel_Hidalgo_CMX,Miguel Hidalgo,CMX,09,MIGUEL HIDALGO,09016
+Venustiano_Carranza_CMX,Venustiano Carranza,CMX,09,VENUSTIANO CARRANZA,09017
+Toluca_MEX,Toluca,MEX,15,TOLUCA,15106
+Zinacantepec_MEX,Zinacantepec,MEX,15,ZINACANTEPEC,15118
+Metepec_MEX,Metepec,MEX,15,METEPEC,15054
+Lerma_MEX,Lerma,MEX,15,LERMA,15051
+Ocoyoacac_MEX,Ocoyoacac,MEX,15,OCOYOACAC,15062
+Cuajimalpa_de_Morelos_CMX,Cuajimalpa de Morelos,CMX,09,CUAJIMALPA DE MORELOS,09004
+Álvaro_Obregón_CMX,Álvaro Obregón,CMX,09,ALVARO OBREGON,09010
+Villa_Hidalgo_JAL,Villa Hidalgo,JAL,14,VILLA HIDALGO,14116
+Aguascalientes_AGU,Aguascalientes,AGU,01,AGUASCALIENTES,01001
+Jesús_María_AGU,Jesús María,AGU,01,JESUS MARIA,01005
+Calvillo_AGU,Calvillo,AGU,01,CALVILLO,01003
+Pabellón_de_Arteaga_AGU,Pabellón de Arteaga,AGU,01,PABELLON DE ARTEAGA,01006
+San_José_de_Gracia_AGU,San José de Gracia,AGU,01,SAN JOSE DE GRACIA,01008
+Tlajomulco_de_Zúñiga_JAL,Tlajomulco de Zúñiga,JAL,14,TLAJOMULCO DE ZUNIGA,14097
+San_Pedro_Tlaquepaque_JAL,San Pedro Tlaquepaque,JAL,14,SAN PEDRO TLAQUEPAQUE,14098
+Acatlán_de_Juárez_JAL,Acatlán de Juárez,JAL,14,ACATLAN DE JUAREZ,14002
+Zacoalco_de_Torres_JAL,Zacoalco de Torres,JAL,14,ZACOALCO DE TORRES,14119
+Tapalpa_JAL,Tapalpa,JAL,14,TAPALPA,14086
+Techaluta_de_Montenegro_JAL,Techaluta de Montenegro,JAL,14,TECHALUTA DE MONTENEGRO,14089
+Amacueca_JAL,Amacueca,JAL,14,AMACUECA,14004
+Atoyac_JAL,Atoyac,JAL,14,ATOYAC,14014
+Sayula_JAL,Sayula,JAL,14,SAYULA,14082
+Gómez_Farías_JAL,Gómez Farías,JAL,14,GOMEZ FARIAS,14079
+Zapotlán_el_Grande_JAL,Zapotlán el Grande,JAL,14,ZAPOTLAN EL GRANDE,14023
+Tuxpan_JAL,Tuxpan,JAL,14,TUXPAN,14108
+Tonila_JAL,Tonila,JAL,14,TONILA,14103
+Cuauhtémoc_COL,Cuauhtémoc,COL,06,CUAUHTEMOC,06005
+Colima_COL,Colima,COL,06,COLIMA,06002
+Villa_de_Álvarez_COL,Villa de Álvarez,COL,06,VILLA DE ALVAREZ,06010
+Coquimatlán_COL,Coquimatlán,COL,06,COQUIMATLAN,06004
+Manzanillo_COL,Manzanillo,COL,06,MANZANILLO,06007
+Tecomán_COL,Tecomán,COL,06,TECOMAN,06009
+Armería_COL,Armería,COL,06,ARMERIA,06001
+Jocotepec_JAL,Jocotepec,JAL,14,JOCOTEPEC,14050
+Ixtlahuacán_de_los_Membrillos_JAL,Ixtlahuacán de los Membrillos,JAL,14,IXTLAHUACAN DE LOS MEMBRILLOS,14044
+El_Salto_JAL,El Salto,JAL,14,EL SALTO,14070
+Juanacatlán_JAL,Juanacatlán,JAL,14,JUANACATLAN,14051
+Chapala_JAL,Chapala,JAL,14,CHAPALA,14030
+Concepción_de_Buenos_Aires_JAL,Concepción de Buenos Aires,JAL,14,CONCEPCION DE BUENOS AIRES,14026
+Mazamitla_JAL,Mazamitla,JAL,14,MAZAMITLA,14059
+San_Ignacio_Cerro_Gordo_JAL,San Ignacio Cerro Gordo,JAL,14,SAN IGNACIO CERRO GORDO,14125
+Arandas_JAL,Arandas,JAL,14,ARANDAS,14008
+Atemajac_de_Brizuela_JAL,Atemajac de Brizuela,JAL,14,ATEMAJAC DE BRIZUELA,14010
+Chiquilistlán_JAL,Chiquilistlán,JAL,14,CHIQUILISTLAN,14032
+San_Gabriel_JAL,San Gabriel,JAL,14,SAN GABRIEL,14113
+Tuxcueca_JAL,Tuxcueca,JAL,14,TUXCUECA,14107
+Tizapán_el_Alto_JAL,Tizapán el Alto,JAL,14,TIZAPAN EL ALTO,14096
+La_Manzanilla_de_la_Paz_JAL,La Manzanilla de la Paz,JAL,14,LA MANZANILLA DE LA PAZ,14057
+Valle_de_Juárez_JAL,Valle de Juárez,JAL,14,VALLE DE JUAREZ,14112
+Sahuayo_MIC,Sahuayo,MIC,16,SAHUAYO,16076
+Cojumatlán_de_Régules_MIC,Cojumatlán de Régules,MIC,16,COJUMATLAN DE REGULES,16074
+Quitupan_JAL,Quitupan,JAL,14,QUITUPAN,14069
+Zapopan_JAL,Zapopan,JAL,14,ZAPOPAN,14120
+Tala_JAL,Tala,JAL,14,TALA,14083
+Villa_Corona_JAL,Villa Corona,JAL,14,VILLA CORONA,14114
+Cocula_JAL,Cocula,JAL,14,COCULA,14024
+Ameca_JAL,Ameca,JAL,14,AMECA,14006
+El_Arenal_JAL,El Arenal,JAL,14,EL ARENAL,14009
+Amatitán_JAL,Amatitán,JAL,14,AMATITAN,14005
+Tequila_JAL,Tequila,JAL,14,TEQUILA,14094
+Teuchitlán_JAL,Teuchitlán,JAL,14,TEUCHITLAN,14095
+San_Martín_Hidalgo_JAL,San Martín Hidalgo,JAL,14,SAN MARTIN HIDALGO,14077
+Poncitlán_JAL,Poncitlán,JAL,14,PONCITLAN,14066
+Ocotlán_JAL,Ocotlán,JAL,14,OCOTLAN,14063
+Jamay_JAL,Jamay,JAL,14,JAMAY,14047
+Zapotlán_del_Rey_JAL,Zapotlán del Rey,JAL,14,ZAPOTLAN DEL REY,14123
+Jiquilpan_MIC,Jiquilpan,MIC,16,JIQUILPAN,16045
+Zamora_MIC,Zamora,MIC,16,ZAMORA,16108
+Jacona_MIC,Jacona,MIC,16,JACONA,16043
+Venustiano_Carranza_MIC,Venustiano Carranza,MIC,16,VENUSTIANO CARRANZA,16103
+Chavinda_MIC,Chavinda,MIC,16,CHAVINDA,16023
+Tangancícuaro_MIC,Tangancícuaro,MIC,16,TANGANCICUARO,16085
+Chilchota_MIC,Chilchota,MIC,16,CHILCHOTA,16025
+Nahuatzen_MIC,Nahuatzen,MIC,16,NAHUATZEN,16056
+Zacapu_MIC,Zacapu,MIC,16,ZACAPU,16107
+Huaniqueo_MIC,Huaniqueo,MIC,16,HUANIQUEO,16037
+Panindícuaro_MIC,Panindícuaro,MIC,16,PANINDICUARO,16063
+Copándaro_MIC,Copándaro,MIC,16,COPANDARO,16018
+Cuitzeo_MIC,Cuitzeo,MIC,16,CUITZEO,16020
+Tarímbaro_MIC,Tarímbaro,MIC,16,TARIMBARO,16088
+Morelia_MIC,Morelia,MIC,16,MORELIA,16053
+Jiménez_MIC,Jiménez,MIC,16,JIMENEZ,16044
+Churintzio_MIC,Churintzio,MIC,16,CHURINTZIO,16028
+Coeneo_MIC,Coeneo,MIC,16,COENEO,16016
+Purépero_MIC,Purépero,MIC,16,PUREPERO,16070
+Chucándiro_MIC,Chucándiro,MIC,16,CHUCANDIRO,16027
+Magdalena_JAL,Magdalena,JAL,14,MAGDALENA,14055
+Hostotipaquillo_JAL,Hostotipaquillo,JAL,14,HOSTOTIPAQUILLO,14040
+Ixtlán_del_Río_NAY,Ixtlán del Río,NAY,18,IXTLAN DEL RIO,18006
+Santa_María_del_Oro_NAY,Santa María del Oro,NAY,18,SANTA MARIA DEL ORO,18014
+Compostela_NAY,Compostela,NAY,18,COMPOSTELA,18004
+San_Pedro_Lagunillas_NAY,San Pedro Lagunillas,NAY,18,SAN PEDRO LAGUNILLAS,18013
+Jala_NAY,Jala,NAY,18,JALA,18007
+Tecolotlán_JAL,Tecolotlán,JAL,14,TECOLOTLAN,14088
+Paracho_MIC,Paracho,MIC,16,PARACHO,16065
+La_Paz_BCS,La Paz,BCS,03,LA PAZ,03003
+Chicxulub Pueblo_31020,Chicxulub Pueblo,,31,CHICXULUB PUEBLO,31020
+Medellín de Bravo_30105,Medellín de Bravo,,30,MEDELLÍN DE BRAVO,30105
+Cihuatlán_14022,Cihuatlán,,14,CIHUATLÁN,14022
+Comala_06003,Comala,,06,COMALA,06003
+Vista Hermosa_16105,Vista Hermosa,N/A,16,VISTA HERMOSA,16105
