@@ -7,6 +7,7 @@ from streamlit_folium import st_folium
 from shapely.geometry import Point, shape
 from streamlit_js_eval import get_geolocation
 import gzip
+import gc
 
 st.set_page_config(page_title="World Map Explorer - ATS", layout="wide")
 
@@ -16,9 +17,10 @@ MX_CSV = "mis_293_municipios_CON_CLAVE.csv"
 US_GEO = "usa_counties_simple.json.gz"
 US_CSV = "mis_condados_usa.csv"
 
-# Carga ultra ligera sin PyOGRIO / GDAL (Cero lag, cero errores de formato)
-@st.cache_data
+# Carga individual bajo demanda para no saturar la memoria RAM del servidor
+@st.cache_data(max_entries=1)
 def cargar_mapa_mx():
+    gc.collect() # Limpiar residuos de memoria
     with gzip.open(MX_GEO, "rt", encoding="utf-8") as f:
         geojson = json.load(f)
         
@@ -31,7 +33,6 @@ def cargar_mapa_mx():
         props['CVEGEO'] = cve
         nom = props.get('NOMGEO', 'Municipio')
         
-        # Geometría básica para centroide rápido
         geom = shape(feat['geometry'])
         cent = geom.centroid
         
@@ -46,8 +47,9 @@ def cargar_mapa_mx():
     gdf = gpd.GeoDataFrame.from_features(features, crs="EPSG:4326")
     return gdf, cat, geojson
 
-@st.cache_data
+@st.cache_data(max_entries=1)
 def cargar_mapa_us():
+    gc.collect() # Limpiar residuos de memoria
     with gzip.open(US_GEO, "rt", encoding="utf-8") as f:
         geojson = json.load(f)
         
@@ -83,13 +85,15 @@ st.sidebar.title("World Map Explorer")
 if "punto_eval" not in st.session_state:
     st.session_state.punto_eval = None
 
-def limpiar_estado():
+def limpiar_estado_y_memoria():
     st.session_state.punto_eval = None
+    st.cache_data.clear() # Limpiar mapas anteriores de la RAM
+    gc.collect()
 
 pais_sel = st.sidebar.selectbox(
     "Selecciona Region:", 
     ["Mexico", "Estados Unidos"],
-    on_change=limpiar_estado
+    on_change=limpiar_estado_y_memoria
 )
 
 if pais_sel == "Mexico":
