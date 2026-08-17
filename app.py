@@ -36,6 +36,12 @@ def cargar_mapa_mx():
             'lon': row['centroide'].x
         }
     geojson = json.loads(bytes_data.decode("utf-8"))
+    
+    # Inyectar CVEGEO limpio en properties
+    for feat in geojson['features']:
+        props = feat.setdefault('properties', {})
+        props['CVEGEO'] = str(props.get('CVEGEO', '')).zfill(5)
+        
     return gdf, cat, geojson
 
 @st.cache_data
@@ -44,7 +50,6 @@ def cargar_mapa_us():
         bytes_data = f_in.read()
     gdf = gpd.read_file(io.BytesIO(bytes_data))
     
-    # Manejo seguro de la columna id / FIPS
     if 'id' in gdf.columns:
         gdf['FIPS'] = gdf['id'].astype(str).str.zfill(5)
     else:
@@ -63,17 +68,20 @@ def cargar_mapa_us():
         }
     geojson = json.loads(bytes_data.decode("utf-8"))
     
-    # Asegurar id en properties para Folium
+    # Inyectar FIPS obligatorio dentro de properties para evitar colapsos en Folium
     for feat in geojson['features']:
-        if 'properties' in feat:
-            feat['properties']['FIPS'] = str(feat.get('id', feat['properties'].get('FIPS', ''))).zfill(5)
+        props = feat.setdefault('properties', {})
+        fips_val = feat.get('id', props.get('FIPS', props.get('GEO_ID_FIPS', '')))
+        props['FIPS'] = str(fips_val).zfill(5)
             
     return gdf, cat, geojson
 
 # Sidebar y Selector
 st.sidebar.title("World Map Explorer")
 
-# Limpiar selección al cambiar de región para evitar crasheo
+if "punto_eval" not in st.session_state:
+    st.session_state.punto_eval = None
+
 def limpiar_estado():
     st.session_state.punto_eval = None
 
@@ -115,7 +123,7 @@ st.sidebar.markdown("---")
 loc = get_geolocation()
 lat_gps, lon_gps = (38.5816, -121.4944) if pais_sel == "Estados Unidos" else (20.6760, -103.3470)
 
-if loc and 'coords' in loc:
+if loc and isinstance(loc, dict) and 'coords' in loc:
     lat_gps = loc['coords']['latitude']
     lon_gps = loc['coords']['longitude']
     st.sidebar.caption(f"GPS Fijo: {lat_gps:.4f}, {lon_gps:.4f}")
@@ -123,9 +131,6 @@ if loc and 'coords' in loc:
 # Buscador Dual
 st.sidebar.subheader(f"Desbloquear {label_entidad[:-1]}")
 metodo = st.sidebar.radio("Metodo:", ["Por Lista", "Por Coordenadas"])
-
-if "punto_eval" not in st.session_state:
-    st.session_state.punto_eval = None
 
 if metodo == "Por Lista":
     sel = st.sidebar.selectbox("Buscar:", ["-- Seleccionar --"] + sorted(list(catalogo.keys())))
@@ -183,7 +188,7 @@ if st.session_state.punto_eval:
 
 def estilo(feature):
     props = feature.get('properties', {})
-    cve = str(props.get('CVEGEO' if pais_sel == "Mexico" else 'FIPS', feature.get('id', ''))).zfill(5)
+    cve = str(props.get('CVEGEO' if pais_sel == "Mexico" else 'FIPS', '')).zfill(5)
     vis = cve in claves_set
     return {
         'fillColor': '#2ea44f' if vis else '#e3e8ec',
@@ -192,5 +197,13 @@ def estilo(feature):
         'fillOpacity': 0.85 if vis else 0.2
     }
 
-folium.GeoJson(geojson_data, style_function=estilo).add_to(m)
+folium.GeoJson(
+    geojson_data, 
+    style_function=estilo,
+    tooltip=folium.GeoJsonTooltip(
+        fields=['NOMGEO'] if pais_sel == "Mexico" else ['NAME'], 
+        aliases=['Lugar:']
+    )
+).add_to(m)
+
 st_folium(m, width=1300, height=720)
